@@ -85,7 +85,8 @@ export default class Launcher
    *
    * _This method will patch the [Log4j vulnerability](https://help.minecraft.net/hc/en-us/articles/4416199399693-Security-Vulnerability-in-Minecraft-Java-Edition)._
    */
-  async launch(): Promise<void> {
+
+  async download(): Promise<void> {
     //* Init downloader
     const downloader = new Downloader(this.config.root, this.config.profile.token)
 
@@ -101,7 +102,6 @@ export default class Launcher
 
     const fileManager = new FileManager(this.config, minecraftManifest, loaderManifest, installProfile, installer)
     const loaderManager = new LoaderManager(this.config, minecraftManifest, loaderManifest, installProfile, installer)
-    const argumentManager = new ArgumentManager(this.config, minecraftManifest, loaderManifest)
     const cleaner = new Cleaner(this.config)
     const java = new Java(this.config)
 
@@ -184,12 +184,35 @@ export default class Launcher
     ]
     await cleaner.clean(files, this.config.cleaning.ignored, !this.config.cleaning.enabled)
 
+  }
+
+  async launch(): Promise<void> {
+    const installer = await loader.getInstaller(this.config)
+    const minecraftManifest = await manifests.getMinecraftManifest(this.config)
+    const installProfile = await manifests.getInstallProfile(this.config, installer)
+    const loaderManifest = await manifests.getLoaderManifests(this.config, installProfile, installer)
+
+    const java = new Java(this.config)
+
+    const argumentManager = new ArgumentManager(this.config, minecraftManifest, loaderManifest)
     //* Check Java
     this.emit('launch_check_java')
     const javaInfo = await java.check(this.config.java.absolutePath, minecraftManifest.javaVersion?.majorVersion ?? 8)
 
     //* Launch
     this.emit('launch_launch', { ...this.config, java: { ...this.config.java, version: javaInfo.version } })
+
+    const fileManager = new FileManager(this.config, minecraftManifest, loaderManifest, installProfile, installer)
+    const loaderManager = new LoaderManager(this.config, minecraftManifest, loaderManifest, installProfile, installer)
+    const loaderFiles = await loaderManager.extract()
+
+    const javaFiles = await fileManager.getJava()
+    const modpackFiles = await fileManager.getModpack()
+    const librariesFiles = await fileManager.getLibraries()
+    const assetsFiles = await fileManager.getAssets()
+    const loaderLibrariesFiles = await fileManager.getLoaderLibraries()
+    const injectorFiles = await fileManager.getInjector()
+    const loggingFiles = await fileManager.getLogging()
 
     const customAuth = argumentManager.getCustomArgs(injectorFiles)
     const args = argumentManager.getArgs([...loaderFiles.libraries, ...librariesFiles.libraries, ...loaderLibrariesFiles.libraries], customAuth)
