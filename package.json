@@ -4,7 +4,7 @@
   "description": "EML-lib fork for YLauncher",
   "author": "KorshunK",
   "license": "MIT",
-  "main": "index.js",
+  "main": "index.ts",
   "types": "index.d.ts",
   "type": "module",
   "scripts": {
