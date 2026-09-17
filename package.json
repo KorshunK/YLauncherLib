@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Electron-Minecraft-Launcher/EML-Lib.git"
+    "url": "git+https://github.com/KorshunK/YLauncherLib.git"
   },
   "keywords": [
     "forge",
