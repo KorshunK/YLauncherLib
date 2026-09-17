@@ -1,8 +1,8 @@
 {
-  "name": "eml-lib",
-  "version": "2.7.3",
-  "description": "Create your Electron Minecraft Launcher easily!",
-  "author": "GoldFrite",
+  "name": "ylauncher-lib",
+  "version": "1.0.0",
+  "description": "EML-lib fork for YLauncher",
+  "author": "KorshunK",
   "license": "MIT",
   "main": "index.js",
   "types": "index.d.ts",
